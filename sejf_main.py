@@ -38,8 +38,8 @@ def main() -> None: # Punkt wejściowy skryptu
 
     key_file_path = str(input())
 
-    if not key_file_path.endswith('\\') or not key_file_path.endswith('\\\\'): # Jeżeli ścieżka kończy się na \ lub \\
-        key_file_path = key_file_path + '\\' # Dodaj do ścieżki slashe
+    if not key_file_path.endswith('/'): # Jeżeli ścieżka kończy się na \ lub \\
+        key_file_path = key_file_path + '/' # Dodaj do ścieżki slashe
 
     if os.path.exists(key_file_path + KEY_FILE_NAME):
         os.system('cls') # BRZYDKIE!!!
@@ -51,20 +51,27 @@ def main() -> None: # Punkt wejściowy skryptu
             if choice == 2:
                 print('Podaj ścieżkę do pliku lub folderu, aby go(je) odszyfrować: ')
                 path = str(input())
-                if os.path.isdir(path):
-                    raise TypeError('W wersji 1.0 tylko pliki są wspierane.')
+                if os.path.isdir(path): #FIXME
+                    for root, dirs, files in os.walk(path).__next__(): 
+                        encrypt(files, f.read())
                 elif os.path.isfile(path): 
                     decrypt(path, f.read())
             else: 
                 print('Podaj ścieżkę do pliku lub folderu, aby go(je) zaszyfrować: ')
                 path = str(input())
-                if os.path.isdir(path):
-                    raise TypeError('W wersji 1.0 tylko pliki są wspierane.')
+                if os.path.isdir(path): #FIXME
+                    for root, dirs, files in os.walk(path).__next__(): 
+                        encrypt(files, f.read())
+                            
                 elif os.path.isfile(path): 
                     encrypt(path, f.read())
-            print('Wykonano daną operację!')
 
+            print('Wykonano daną operację!')
     else:
+        if not os.path.exists(key_file_path):
+            print('Tworzenie wybranej przez Ciebie ścieżki...')
+            os.mkdir(key_file_path)
+
         print('Tworzenie klucza na wybranej przez Ciebie ścieżce...')
         with open(key_file_path + KEY_FILE_NAME, 'wb') as f: # "Otwórz" plik
             f.write(Fernet.generate_key() ) # Stwórz nowy klucz i zapisz go do pliku
